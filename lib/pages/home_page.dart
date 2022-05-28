@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sqlite/alarm.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -6,6 +7,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Alarm> alarmList = [
+    Alarm(alarmTime: DateTime.now())
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
