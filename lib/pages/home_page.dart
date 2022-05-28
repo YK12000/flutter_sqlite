@@ -71,7 +71,9 @@ class _HomePageState extends State<HomePage> {
                           caption: '削除',
                           color: Colors.red,
                           onTap: (){
-
+                            alarmList.removeAt(index);
+                            setState(() {
+                            });
                           },
                         )
                       ],
