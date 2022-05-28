@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_sqlite/alarm.dart';
+import 'package:flutter_sqlite/pages/add_edit_alarm_page.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,7 +30,7 @@ class _HomePageState extends State<HomePage> {
             trailing: GestureDetector(
                 child: Icon(Icons.add,color: Colors.orange,),
                 onTap: (){
-
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddeditAlarm()));
                 },
             ),
           ),
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                           caption: '削除',
                           color: Colors.red,
                           onTap: (){
-                            
+
                           },
                         )
                       ],
