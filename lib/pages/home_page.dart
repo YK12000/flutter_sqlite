@@ -12,8 +12,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Alarm> alarmList = [
-    Alarm(alarmTime: DateTime.now()),
-    Alarm(alarmTime: DateTime.now()),
   ];
 
   SlidableController controller = SlidableController();
@@ -29,8 +27,11 @@ class _HomePageState extends State<HomePage> {
             largeTitle: Text('アラーム',style: TextStyle(color: Colors.white)),
             trailing: GestureDetector(
                 child: Icon(Icons.add,color: Colors.orange,),
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddeditAlarm()));
+                onTap: () async{
+                  await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditAlarmPage(alarmList)));
+                  setState(() {
+                    alarmList.sort((a, b) => a.alarmTime.compareTo(b.alarmTime));
+                  });
                 },
             ),
           ),
@@ -57,6 +58,12 @@ class _HomePageState extends State<HomePage> {
                               });
                             },
                           ),
+                        onTap: () async {
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditAlarmPage(alarmList,index: index,)));
+                          setState(() {
+                            alarmList.sort((a, b) => a.alarmTime.compareTo(b.alarmTime));
+                          });
+                        },
                       ),
                       secondaryActions: [
                         IconSlideAction(

@@ -1,14 +1,36 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class AddeditAlarm extends StatefulWidget {
-  const AddeditAlarm({Key? key}) : super(key: key);
+import '../alarm.dart';
+
+class AddEditAlarmPage extends StatefulWidget {
+  List<Alarm> alarmList;
+  final int? index;
+  AddEditAlarmPage(this.alarmList,{this.index});
 
   @override
-  State<AddeditAlarm> createState() => _AddeditAlarmState();
+  State<AddEditAlarmPage> createState() => _AddEditAlarmPageState();
 }
 
-class _AddeditAlarmState extends State<AddeditAlarm> {
+class _AddEditAlarmPageState extends State<AddEditAlarmPage> {
   TextEditingController controller = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+
+  void initEditAlarm(){
+    if(widget.index != null){
+      selectedDate = widget.alarmList[widget.index!].alarmTime;
+      controller.text = DateFormat('H:mm').format(selectedDate);
+      setState(() {
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initEditAlarm();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +54,12 @@ class _AddeditAlarmState extends State<AddeditAlarm> {
               child: Text('保存',style: TextStyle(color: Colors.orange),),
             ),
             onTap: (){
+              Alarm alarm = Alarm(alarmTime: DateTime(2000,1,1,selectedDate.hour,selectedDate.minute));
+              if(widget.index != null){
+                widget.alarmList[widget.index!] = alarm;
+              } else {
+                widget.alarmList.add(alarm);
+              }
               Navigator.pop(context);
             },
           )
@@ -66,11 +94,22 @@ class _AddeditAlarmState extends State<AddeditAlarm> {
                       ),
                       readOnly: true,
                       onTap: (){
-                        
+                        showModalBottomSheet(context: context, builder: (context){
+                          return CupertinoDatePicker(
+                              initialDateTime: selectedDate,
+                              mode: CupertinoDatePickerMode.time,
+                              onDateTimeChanged: (newDate){
+                                String time = DateFormat('H:mm').format(newDate);
+                                selectedDate = newDate;
+                                controller.text = time;
+                                setState(() {
+                                });
+                              },
+                          );
+                        });
                       },
                     ),
-                  )
-                ],
+                  )]
               ),
             ),
           ],
