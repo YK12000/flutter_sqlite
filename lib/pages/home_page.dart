@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_sqlite/alarm.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +14,8 @@ class _HomePageState extends State<HomePage> {
     Alarm(alarmTime: DateTime.now()),
     Alarm(alarmTime: DateTime.now()),
   ];
+
+  SlidableController controller = SlidableController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +40,33 @@ class _HomePageState extends State<HomePage> {
                 return Column(
                   children: [
                     if(index == 0) Divider(color: Colors.grey,height: 2),
-                    ListTile(
-                      title: Text(DateFormat('H:mm').format(alarm.alarmTime),
-                          style: TextStyle(color: Colors.white, fontSize: 50,
+                    Slidable(
+                      controller: controller,
+                      actionPane: SlidableScrollActionPane(),
+                      child: ListTile(
+                        title: Text(DateFormat('H:mm').format(alarm.alarmTime),
+                            style: TextStyle(color: Colors.white, fontSize: 50,
+                            ),
                           ),
-                        ),
-                        trailing: CupertinoSwitch(
-                          value: true,
-                          onChanged: (newvalue) {
-
+                          trailing: CupertinoSwitch(
+                            value: alarm.isActive,
+                            onChanged: (newvalue) {
+                              setState(() {
+                                alarm.isActive = newvalue;
+                              });
+                            },
+                          ),
+                      ),
+                      secondaryActions: [
+                        IconSlideAction(
+                          icon: Icons.delete,
+                          caption: '削除',
+                          color: Colors.red,
+                          onTap: (){
+                            
                           },
-                        ),
+                        )
+                      ],
                     ),
                     Divider(color: Colors.grey,height: 0,)
                   ],
