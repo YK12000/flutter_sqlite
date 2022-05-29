@@ -8,6 +8,7 @@ import 'package:flutter_sqlite/alarm.dart';
 import 'package:flutter_sqlite/pages/add_edit_alarm_page.dart';
 import 'package:flutter_sqlite/sqflite.dart';
 import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,7 +18,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Alarm> alarmList = [];
   SlidableController controller = SlidableController();
-  Timer? _timer;
   DateTime time = DateTime.now();
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -36,8 +36,28 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void notification() async {
+  void initializeNotifications(){
     flutterLocalNotificationsPlugin.initialize(
+        InitializationSettings(
+            android: AndroidInitializationSettings('ic_launcher'),
+            iOS: IOSInitializationSettings()
+        ));
+  }
+
+  void setNotification(int id){
+    flutterLocalNotificationsPlugin.zonedSchedule(
+        id, 'アラーム', '時間になりました', tz.TZDateTime.now(tz.local).add(Duration(seconds: 3)),
+        NotificationDetails(
+        android: AndroidNotificationDetails('id','name',importance: Importance.max,priority: Priority.high),
+        iOS: IOSNotificationDetails()
+        ),
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        androidAllowWhileIdle: true
+    );
+  }
+
+  void notification() async {
+    await flutterLocalNotificationsPlugin.initialize(
         InitializationSettings(
           android: AndroidInitializationSettings('ic_launcher'),
           iOS: IOSInitializationSettings()
@@ -48,24 +68,13 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
+
   @override
   void initState() {
     super.initState();
     initDb();
-    _timer = Timer.periodic(Duration(seconds: 1),
-            (timer) {
-              time = time.add(Duration(seconds: 1));
-              alarmList.forEach((alarm) {
-                if(
-                  alarm.isActive == true
-                      && alarm.alarmTime.hour == time.hour
-                      && alarm.alarmTime.minute == time.minute
-                      && time.second == 0
-                ) {
-                  notification();
-                }
-              });
-            });
+    initializeNotifications();
+
   }
 
 
@@ -82,6 +91,7 @@ class _HomePageState extends State<HomePage> {
                 child: Icon(Icons.add,color: Colors.orange,),
                 onTap: () async{
                   await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditAlarmPage(alarmList)));
+                  setNotification(0);
                   reBuild();
                 },
             ),
