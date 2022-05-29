@@ -18,6 +18,8 @@ class _HomePageState extends State<HomePage> {
   List<Alarm> alarmList = [];
   SlidableController controller = SlidableController();
   Timer? _timer;
+  DateTime time = DateTime.now();
+
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 
@@ -52,7 +54,17 @@ class _HomePageState extends State<HomePage> {
     initDb();
     _timer = Timer.periodic(Duration(seconds: 1),
             (timer) {
-              notification();
+              time = time.add(Duration(seconds: 1));
+              alarmList.forEach((alarm) {
+                if(
+                  alarm.isActive == true
+                      && alarm.alarmTime.hour == time.hour
+                      && alarm.alarmTime.minute == time.minute
+                      && time.second == 0
+                ) {
+                  notification();
+                }
+              });
             });
   }
 
