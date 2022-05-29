@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -14,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Alarm> alarmList = [];
   SlidableController controller = SlidableController();
+  Timer? _timer;
 
   Future<void> initDb() async {
     await DbProvider.setDb();
@@ -32,6 +35,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     initDb();
+    _timer = Timer.periodic(Duration(seconds: 1),
+            (timer) {
+              print('定期実行');
+            });
   }
 
 
