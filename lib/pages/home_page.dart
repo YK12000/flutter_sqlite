@@ -18,8 +18,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> initDb() async {
     await DbProvider.setDb();
     alarmList = await DbProvider.getData();
-    setState(() {
-    });
+    reBuild();
   }
 
   Future<void> reBuild() async {
@@ -70,10 +69,10 @@ class _HomePageState extends State<HomePage> {
                           ),
                           trailing: CupertinoSwitch(
                             value: alarm.isActive,
-                            onChanged: (newvalue) {
-                              setState(() {
-                                alarm.isActive = newvalue;
-                              });
+                            onChanged: (newvalue) async {
+                              alarm.isActive = newvalue;
+                              await DbProvider.updateData(alarm);
+                              reBuild();
                             },
                           ),
                         onTap: () async {
@@ -86,10 +85,9 @@ class _HomePageState extends State<HomePage> {
                           icon: Icons.delete,
                           caption: '削除',
                           color: Colors.red,
-                          onTap: (){
-                            alarmList.removeAt(index);
-                            setState(() {
-                            });
+                          onTap: () async{
+                            await DbProvider.deleteData(alarm.id);
+                            reBuild();
                           },
                         )
                       ],

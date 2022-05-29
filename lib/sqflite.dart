@@ -46,6 +46,18 @@ class DbProvider {
     }
   }
 
+  static Future<void> updateData(Alarm alarm) async {
+    await databese!.update(tablename, {
+      'alarm_time': alarm.alarmTime.toString(),
+      'is_active' : alarm.isActive ? 0 : 1
+    },
+      where: 'id = ?',
+      whereArgs: [alarm.id]
+    );
+  }
 
+  static Future<void> deleteData(int id) async {
+    await databese!.delete(tablename,where: 'id = ?',whereArgs: [id]);
+  }
 
 }
