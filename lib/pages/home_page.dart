@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_sqlite/alarm.dart';
 import 'package:flutter_sqlite/pages/add_edit_alarm_page.dart';
+import 'package:flutter_sqlite/sqflite.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,10 +12,29 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Alarm> alarmList = [
-  ];
-
+  List<Alarm> alarmList = [];
   SlidableController controller = SlidableController();
+
+  Future<void> initDb() async {
+    await DbProvider.setDb();
+    alarmList = await DbProvider.getData();
+    setState(() {
+    });
+  }
+
+  Future<void> reBuild() async {
+    alarmList = await DbProvider.getData();
+    setState(() {
+      alarmList.sort((a, b) => a.alarmTime.compareTo(b.alarmTime));
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initDb();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +49,7 @@ class _HomePageState extends State<HomePage> {
                 child: Icon(Icons.add,color: Colors.orange,),
                 onTap: () async{
                   await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditAlarmPage(alarmList)));
-                  setState(() {
-                    alarmList.sort((a, b) => a.alarmTime.compareTo(b.alarmTime));
-                  });
+                  reBuild();
                 },
             ),
           ),
@@ -60,9 +78,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         onTap: () async {
                           await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditAlarmPage(alarmList,index: index,)));
-                          setState(() {
-                            alarmList.sort((a, b) => a.alarmTime.compareTo(b.alarmTime));
-                          });
+                          reBuild();
                         },
                       ),
                       secondaryActions: [
