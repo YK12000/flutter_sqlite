@@ -44,9 +44,9 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  void setNotification(int id){
+  void setNotification(int id,DateTime alarmTime){
     flutterLocalNotificationsPlugin.zonedSchedule(
-        id, 'アラーム', '時間になりました', tz.TZDateTime.now(tz.local).add(Duration(seconds: 3)),
+        id, 'アラーム', '時間になりました', tz.TZDateTime.from(alarmTime, tz.local),
         NotificationDetails(
         android: AndroidNotificationDetails('id','name',importance: Importance.max,priority: Priority.high),
         iOS: IOSNotificationDetails()
@@ -90,9 +90,11 @@ class _HomePageState extends State<HomePage> {
             trailing: GestureDetector(
                 child: Icon(Icons.add,color: Colors.orange,),
                 onTap: () async{
-                  await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditAlarmPage(alarmList)));
-                  setNotification(0);
-                  reBuild();
+                  var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditAlarmPage(alarmList)));
+                  if (result!=null){
+                    setNotification(result.id,result.alarmTime);
+                    reBuild();
+                  }
                 },
             ),
           ),

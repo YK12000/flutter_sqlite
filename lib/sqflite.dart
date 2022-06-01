@@ -24,11 +24,13 @@ class DbProvider {
     }
   }
 
-  static Future<void> insertData(Alarm alarm) async {
+  static Future<int> insertData(Alarm alarm) async {
     await databese!.insert(tablename, {
       'alarm_time': alarm.alarmTime.toString(),
       'is_active' : alarm.isActive ? 0 : 1
     });
+    final List<Map<String,dynamic>> maps = await databese!.query(tablename);
+    return maps.last['id'];
   }
 
   static Future<List<Alarm>> getData() async {
